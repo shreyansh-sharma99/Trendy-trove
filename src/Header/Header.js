@@ -1,142 +1,3 @@
-// import React, { useState } from "react";
-// import { useNavigate } from "react-router-dom";
-// import axios from "axios";
-// import {
-//   HiOutlineSearch,
-//   HiOutlineShoppingCart,
-//   HiOutlineUser,
-// } from "react-icons/hi";
-// import { IoIosLogOut } from "react-icons/io";
-// import BasicModal from "../Modal";
-
-// function Header() {
-//   const navigate = useNavigate();
-//   const [searchQuery, setSearchQuery] = useState("");
-//   const [searchResults, setSearchResults] = useState([]);
-
-//   const handleLogout = () => {
-//     localStorage.removeItem("user");
-//     navigate("/login");
-//   };
-
-//   const handleSearch = async () => {
-//     if (!searchQuery.trim()) {
-//       return;
-//     }
-
-//     try {
-//       const response = await axios.get(
-//         `https://dummyjson.com/products/search?q=${searchQuery}`
-//       );
-//       setSearchResults(response.data);
-//     } catch (error) {
-//       console.error("Error fetching search results:", error);
-//       setSearchResults([]);
-//     }
-//   };
-
-//   return (
-//     <header className="bg-gray-900 w-full sm:overflow-scroll text-white  shadow-md">
-//       <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
-//         <div className="flex items-center justify-between h-16">
-//           <div
-//             className="flex-shrink-0 cursor-pointer"
-//             onClick={() => navigate("/product")}
-//           >
-//             <img className="h-10" src="downloadlogo.png" alt="Logo" />
-//           </div>
-
-//           <nav className="hidden lg:flex flex-grow justify-center space-x-4">
-//             <NavLink navigate={navigate} to="/product">
-//               Home
-//             </NavLink>
-//             <NavLink navigate={navigate} to="/shop">
-//               Shop
-//             </NavLink>
-//             <NavLink navigate={navigate} to="/about">
-//               About
-//             </NavLink>
-//             <NavLink navigate={navigate} to="/contact">
-//               Contact
-//             </NavLink>
-//           </nav>
-
-//           <div className="flex  items-center space-x-4 ml-auto">
-//             <div className="relative">
-//               <input
-//                 type="text"
-//                 className="w-28 lg:w-64 px-3 py-2 border border-gray-300 rounded-md placeholder-gray-500 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-gray-800 text-white"
-//                 placeholder="Search..."
-//                 value={searchQuery}
-//                 onChange={(e) => setSearchQuery(e.target.value)}
-//               />
-//               <button
-//                 onClick={handleSearch}
-//                 className="absolute right-0 top-0 mt-1 mr-2 flex items-center cursor-pointer"
-//               >
-//                 <HiOutlineSearch />
-//               </button>
-//             </div>
-//             <NavLink
-//               navigate={navigate}
-//               to="/cart"
-//               className="hidden lg:flex items-center ml-4"
-//               style={{ textDecoration: "none" }}
-//             >
-//               <div className=" hidden lg:flex items-center">
-//                 <HiOutlineShoppingCart className="text-gray-300 hover:text-white" />
-//                 <span className="ml-1 hidden lg:inline text-gray-300 hover:text-white">
-//                   Cart
-//                 </span>
-//               </div>
-//             </NavLink>
-
-//             <NavLink
-//               navigate={navigate}
-//               to="/create-account"
-//               className="hidden lg:flex items-center ml-4"
-//               style={{ textDecoration: "none" }}
-//             >
-//               <div className="hidden lg:flex  items-center">
-//                 <HiOutlineUser className=" lg:flex items-center text-gray-300 hover:text-white" />
-
-//                 <span className="hidden lg:inline  text-gray-300 hover:text-white">
-//                   Account
-//                 </span>
-//               </div>
-//             </NavLink>
-
-//             <button
-//               className="hidden lg:flex items-center text-gray-300 hover:text-white"
-//               onClick={handleLogout}
-//             >
-//               <IoIosLogOut className="text-gray-300 hover:text-white" />
-//               <span className="ml-1 hidden lg:inline  text-gray-300 hover:text-white">
-//                 Logout
-//               </span>
-//             </button>
-//           </div>
-//           <div className="lg:hidden text-left mr-2 ">
-//             <BasicModal />
-//           </div>
-//         </div>
-//       </div>
-//     </header>
-//   );
-// }
-
-// function NavLink({ navigate, to, children }) {
-//   return (
-//     <button
-//       onClick={() => navigate(to)}
-//       className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium cursor-pointer"
-//     >
-//       {children}
-//     </button>
-//   );
-// }
-
-// export default Header;
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
@@ -146,7 +7,6 @@ import {
   HiOutlineUser,
 } from "react-icons/hi";
 import { IoIosLogOut } from "react-icons/io";
-import BasicModal from "../Modal";
 
 function Header() {
   const navigate = useNavigate();
@@ -154,26 +14,39 @@ function Header() {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isSuggestionsOpen, setIsSuggestionsOpen] = useState(false);
 
   const handleLogout = () => {
     localStorage.removeItem("user");
     navigate("/login");
   };
 
-  const handleSearch = async () => {
-    if (!searchQuery.trim()) {
+  const handleSearch = async (reqData) => {
+    if (!reqData.trim()) {
+      setSearchResults([]);
       return;
     }
 
     try {
       const response = await axios.get(
-        `https://dummyjson.com/products/search?q=${searchQuery}`
+        `https://dummyjson.com/products/search?q=${reqData}`
       );
-      setSearchResults(response.data);
+      const data = response.data.products;
+      console.log(data);
+      // setSearchResults(response.data.products);
+      setSearchResults(data);
+      setIsSuggestionsOpen(true);
     } catch (error) {
       console.error("Error fetching search results:", error);
       setSearchResults([]);
+      setIsSuggestionsOpen(false);
     }
+  };
+
+  const handleSelectSuggestion = (suggestion) => {
+    setSearchQuery(suggestion.title);
+    setIsSuggestionsOpen(false);
+    navigate(`/products/${suggestion.id}`);
   };
 
   const toggleMenu = () => {
@@ -182,7 +55,16 @@ function Header() {
 
   useEffect(() => {
     setIsMenuOpen(false);
+    setIsSuggestionsOpen(false);
   }, [location]);
+
+  useEffect(() => {
+    if (searchQuery) {
+      handleSearch(searchQuery);
+    } else {
+      setSearchResults([]);
+    }
+  }, [searchQuery]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -199,7 +81,7 @@ function Header() {
   }, [isMenuOpen]);
 
   return (
-    <header className="bg-gray-900 w-full text-white shadow-md overflow-hidden">
+    <header className="bg-gray-900 w-full text-white shadow-md">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <div
@@ -224,7 +106,7 @@ function Header() {
             </NavLink>
           </nav>
 
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-4 relative">
             <div className="relative">
               <input
                 type="text"
@@ -233,13 +115,25 @@ function Header() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
-              <button
-                onClick={handleSearch}
-                className="absolute right-0 top-0 mt-2 mr-2 flex items-center cursor-pointer"
-              >
+              <button className="absolute right-0 top-0 mt-2 mr-2 flex items-center cursor-pointer">
                 <HiOutlineSearch />
               </button>
+
+              {isSuggestionsOpen && searchResults.length > 0 && (
+                <ul className="absolute z-50 w-full bg-gray-700 text-white border border-gray-500 rounded-md mt-1 max-h-64 overflow-y-auto">
+                  {searchResults.map((result) => (
+                    <li
+                      key={result.id}
+                      onClick={() => handleSelectSuggestion(result)}
+                      className="px-4 py-2 hover:bg-gray-600 cursor-pointer"
+                    >
+                      {result.title}
+                    </li>
+                  ))}
+                </ul>
+              )}
             </div>
+
             <div className="hidden lg:flex items-center space-x-4">
               <div className="flex items-center">
                 <HiOutlineShoppingCart
