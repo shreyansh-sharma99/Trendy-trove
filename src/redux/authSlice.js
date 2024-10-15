@@ -1,28 +1,3 @@
-// // authSlice.js
-// import { createSlice } from "@reduxjs/toolkit";
-
-// const initialState = {
-//   user: null,
-//   isLoggedIn: false,
-// };
-
-// const authSlice = createSlice({
-//   name: "auth",
-//   initialState,
-//   reducers: {
-//     login(state, action) {
-//       state.user = action.payload.username;
-//       state.isLoggedIn = true;
-//     },
-//     logout(state) {
-//       state.user = null;
-//       state.isLoggedIn = false;
-//     },
-//   },
-// });
-
-// export const { login, logout } = authSlice.actions;
-// export default authSlice.reducer;
 
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
@@ -70,7 +45,8 @@ export const loginAsync = createAsyncThunk(
         password,
         expiresInMins: 30,
       });
-      const token = response.data.token;
+      // console.log(response);
+      const token = response.data.accessToken;
       localStorage.setItem("token", token);
       return { username, token };
     } catch (error) {
